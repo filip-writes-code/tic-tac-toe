@@ -19,12 +19,12 @@ function gameBoard() {
         //check if the spot hasn't been played before
         if (spot.getValue() === 0) {
             spot.changeValue(player);
+            return true;
         } else {
-            return('Illegal move');
+            return(false);
         }
     }
 
-    
     return {
         getBoard,
         printBoard,
@@ -47,5 +47,47 @@ function cell() {
     }
 }
 
+function gameController (
+    playerOneName = 'Player 1',
+    playerTwoName = 'Player 2'
+) {
+    const players = [
+        {
+            name: playerOneName,
+            token: 1
+        },
+        {
+            name: playerTwoName,
+            token: 2
+        }
+    ];
 
-const game = gameBoard();
+    const board = gameBoard();
+    let activePlayer = players[0];
+
+    const switchActivePlayer = () => {
+        activePlayer = activePlayer === players[0] ? players[1] : players[0];
+    }
+    
+    const printNewRound = () => {
+        board.printBoard();
+        console.log(`${activePlayer.name}'s turn.`)
+    }
+
+    const playRound = (row, column) => {
+        if(board.dropToken(row, column, activePlayer.token)) {
+        switchActivePlayer();
+        printNewRound();
+        } else { 
+            printNewRound()
+        }
+    }
+
+    printNewRound();
+
+    return {
+        playRound
+    }
+}
+
+const game = gameController();
