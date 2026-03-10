@@ -74,6 +74,19 @@ function gameController (
         console.log(`${activePlayer.name}'s turn.`)
     }
 
+    const scanForWinner = () => {
+        const allEqual = arr => arr.every(v => v.getValue() !==0 && v.getValue() === arr[0].getValue() )
+        const boardToScan = board.getBoard();
+            if (allEqual(boardToScan[0])) {return boardToScan[0][0].getValue()};
+            if (allEqual(boardToScan[1])) {return boardToScan[1][0].getValue()}
+            if (allEqual(boardToScan[2])) {return boardToScan[2][0].getValue()}
+            if (allEqual([boardToScan[0][0], boardToScan[1][0], boardToScan[2][0]])) {return boardToScan[0][0].getValue()}
+            if (allEqual([boardToScan[0][1], boardToScan[1][1], boardToScan[2][1]])) {return boardToScan[0][1].getValue()}
+            if (allEqual([boardToScan[0][2], boardToScan[1][2], boardToScan[2][2]])) {return boardToScan[0][2].getValue()}
+            if (allEqual([boardToScan[0][0], boardToScan[1][1], boardToScan[2][2]])) {return boardToScan[0][0].getValue()}
+            if (allEqual([boardToScan[0][2], boardToScan[1][1], boardToScan[2][0]])) {return boardToScan[0][2].getValue()}
+    }
+
     const playRound = (row, column) => {
         if(board.dropToken(row, column, activePlayer.token)) {
         switchActivePlayer();
@@ -86,8 +99,14 @@ function gameController (
     printNewRound();
 
     return {
-        playRound
+        playRound,
+        scanForWinner
     }
 }
 
 const game = gameController();
+game.playRound(0,2) //x
+game.playRound(0,1) //o
+game.playRound(1,1) //x
+game.playRound(2,1) //o
+game.playRound(2,0) //x
