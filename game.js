@@ -91,6 +91,9 @@ function gameController (
         if(board.dropToken(row, column, activePlayer.token)) {
         switchActivePlayer();
         printNewRound();
+        if (scanForWinner()) {
+            console.log('Winner is: ' + scanForWinner())
+        }
         } else { 
             printNewRound()
         }
