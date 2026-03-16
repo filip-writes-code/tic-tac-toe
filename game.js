@@ -87,12 +87,17 @@ function gameController (
             if (allEqual([boardToScan[0][2], boardToScan[1][1], boardToScan[2][0]])) {return boardToScan[0][2].getValue()}
     }
 
+    const returnPlayerByToken = (searchToken) => {
+        const playerObject = players.filter((player) => searchToken === player.token)[0];
+        return playerObject;
+    }
+
     const playRound = (row, column) => {
         if(board.dropToken(row, column, activePlayer.token)) {
         switchActivePlayer();
         printNewRound();
         if (scanForWinner()) {
-            console.log('Winner is: ' + scanForWinner())
+            console.log('Winner is: ' + returnPlayerByToken(scanForWinner()).name)
         }
         } else { 
             printNewRound()
