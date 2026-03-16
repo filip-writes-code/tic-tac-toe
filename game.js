@@ -17,7 +17,7 @@ function gameBoard() {
     const dropToken = (row, column, player) => {
         const spot = board[row][column];
         //check if the spot hasn't been played before
-        if (spot.getValue() === 0) {
+        if (spot.getValue() === '') {
             spot.changeValue(player);
             return true;
         } else {
@@ -33,7 +33,7 @@ function gameBoard() {
 }
 
 function cell() {
-    let value = 0;
+    let value = '';
 
     const changeValue = (player) => {
         value = player;
@@ -54,16 +54,20 @@ function gameController (
     const players = [
         {
             name: playerOneName,
-            token: 1
+            token: 'X'
         },
         {
             name: playerTwoName,
-            token: 2
+            token: 'O'
         }
     ];
 
     const board = gameBoard();
     let activePlayer = players[0];
+
+    const getActivePlayer = () => {
+        return activePlayer;
+    }
 
     const switchActivePlayer = () => {
         activePlayer = activePlayer === players[0] ? players[1] : players[0];
@@ -75,7 +79,7 @@ function gameController (
     }
 
     const scanForWinner = () => {
-        const allEqual = arr => arr.every(v => v.getValue() !==0 && v.getValue() === arr[0].getValue() )
+        const allEqual = arr => arr.every(v => v.getValue() !=='' && v.getValue() === arr[0].getValue() )
         const boardToScan = board.getBoard();
             if (allEqual(boardToScan[0])) {return boardToScan[0][0].getValue()};
             if (allEqual(boardToScan[1])) {return boardToScan[1][0].getValue()}
@@ -108,13 +112,45 @@ function gameController (
 
     return {
         playRound,
-        scanForWinner
+        getActivePlayer,
+        getBoard : board.getBoard
     }
 }
 
-const game = gameController();
-game.playRound(0,2) //x
-game.playRound(0,1) //o
-game.playRound(1,1) //x
-game.playRound(2,1) //o
-game.playRound(2,0) //x
+function screenController () {
+    const game = gameController();
+    const boardDiv = document.querySelector('.board');
+
+    const updateScreen = () => {
+        //start fresh
+        boardDiv.textContent = '';
+        //get the latest state of the board and active player
+        const screenBoard = game.getBoard();
+        const activePlayer = game.getActivePlayer();
+        //print the board
+        screenBoard.forEach((row, row_index) => {
+            row.forEach((cell, column_index) => {
+                const cellElement = document.createElement('button');
+                cellElement.classList.add('cell');
+                cellElement.textContent = cell.getValue();
+                cellElement.dataset.row = row_index;
+                cellElement.dataset.column = column_index;
+                boardDiv.appendChild(cellElement);
+            })
+            })
+    }
+
+    function clickHandler(e) {
+        const selectedRow = e.target.dataset.row;
+        const selectedColumn = e.target.dataset.column;
+
+        game.playRound(selectedRow, selectedColumn);
+        updateScreen();
+    }
+
+    boardDiv.addEventListener('click', clickHandler);
+
+updateScreen();
+
+}
+screenController();
