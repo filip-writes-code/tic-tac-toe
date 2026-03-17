@@ -61,7 +61,7 @@ function gameController (
             token: 'O'
         }
     ];
-
+    
     const board = gameBoard();
     let activePlayer = players[0];
 
@@ -91,6 +91,21 @@ function gameController (
             if (allEqual([boardToScan[0][2], boardToScan[1][1], boardToScan[2][0]])) {return boardToScan[0][2].getValue()}
     }
 
+    const isTied = () => {
+        const boardToCheck = board.getBoard();
+        const arrayOfCells = [];
+        boardToCheck.forEach(row => {
+            row.forEach(cell => {
+                arrayOfCells.push(cell);
+            })
+        })
+        if (arrayOfCells.every(cell => cell.getValue() !== '')) {
+            return true
+        } else {
+            return false
+        }
+    }
+
     const returnPlayerByToken = (searchToken) => {
         const playerObject = players.filter((player) => searchToken === player.token)[0];
         return playerObject;
@@ -100,11 +115,16 @@ function gameController (
         if(board.dropToken(row, column, activePlayer.token)) {
         switchActivePlayer();
         printNewRound();
+        //check for winner
         if (scanForWinner()) {
             console.log('Winner is: ' + returnPlayerByToken(scanForWinner()).name)
         }
         } else { 
             printNewRound()
+        }
+        //check if it's tied
+        if (isTied()) {
+            console.log("It's a tie!")
         }
     }
 
