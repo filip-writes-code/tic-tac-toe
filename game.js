@@ -65,6 +65,7 @@ function gameController (
     const board = gameBoard();
     let activePlayer = players[0];
     let gameOver = false;
+    let winner = false;
 
     const getGameOver = () => {
         return gameOver;
@@ -148,15 +149,41 @@ function gameController (
 }
 
 function screenController () {
+    //get player input and remove that div from DOM
     const playerInputDiv = document.querySelector('.player-input')
-    const inputPlayerOne = document.querySelector('#player-one').value;
-    const inputPlayerTwo = document.querySelector('#player-two').value;
+    const inputPlayerOne = document.querySelector('#player-one').value ? document.querySelector('#player-one').value : 'Player 1';
+    const inputPlayerTwo = document.querySelector('#player-two').value ? document.querySelector('#player-two').value : 'Player 2';
     playerInputDiv.remove();
 
+    //create html DIVs for the game
+    const createGameLayout = () => {
+        //create container
+        const containerDiv = document.createElement('div')
+        containerDiv.classList.add('game-container')
+        //create game-status div
+        const gameStatusDiv = document.createElement('div')
+        gameStatusDiv.classList.add('game-status')
+        //create and add a text element to game-status div
+        const gameStatusText = document.createElement('h1')
+        gameStatusText.id = 'game-status-text';
+        gameStatusDiv.appendChild(gameStatusText);
+        //add game-status div to the container div
+        containerDiv.appendChild(gameStatusDiv);
+        //add board div to the container div
+        const boardDivElement = document.createElement('div')
+        boardDivElement.classList.add('board');
+        containerDiv.appendChild(boardDivElement);
+        //add container div to body
+        document.body.appendChild(containerDiv)
+    }
+
+    createGameLayout();
     const game = gameController(inputPlayerOne, inputPlayerTwo);
     const boardDiv = document.querySelector('.board');
+    const gameStatus = document.querySelector('#game-status-text')
 
     const updateScreen = () => {
+        gameStatus.textContent = game.getActivePlayer().name + "'s turn";
         //start fresh
         boardDiv.textContent = '';
         //get the latest state of the board and active player
@@ -174,9 +201,9 @@ function screenController () {
             })
             })
         //check if game is over
-        console.log(game.gameOver);
         if (game.getGameOver()) {
             disableBoard();
+            gameStatus.textContent = "Game Over"
         }
     }
 
