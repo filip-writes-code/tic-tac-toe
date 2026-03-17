@@ -224,5 +224,3 @@ boardDiv.addEventListener('click', clickHandler);
 updateScreen();
 
 }
-
-// screenController();
