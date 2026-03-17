@@ -64,6 +64,11 @@ function gameController (
     
     const board = gameBoard();
     let activePlayer = players[0];
+    let gameOver = false;
+
+    const getGameOver = () => {
+        return gameOver;
+    }
 
     const getActivePlayer = () => {
         return activePlayer;
@@ -118,27 +123,37 @@ function gameController (
         //check for winner
         if (scanForWinner()) {
             console.log('Winner is: ' + returnPlayerByToken(scanForWinner()).name)
+            gameOver = true;
+            return;
         }
         } else { 
             printNewRound()
         }
         //check if it's tied
         if (isTied()) {
+            gameOver = true;
             console.log("It's a tie!")
         }
     }
 
+    //inital console print
     printNewRound();
 
     return {
         playRound,
         getActivePlayer,
-        getBoard : board.getBoard
+        getBoard : board.getBoard,
+        getGameOver
     }
 }
 
 function screenController () {
-    const game = gameController();
+    const playerInputDiv = document.querySelector('.player-input')
+    const inputPlayerOne = document.querySelector('#player-one').value;
+    const inputPlayerTwo = document.querySelector('#player-two').value;
+    playerInputDiv.remove();
+
+    const game = gameController(inputPlayerOne, inputPlayerTwo);
     const boardDiv = document.querySelector('.board');
 
     const updateScreen = () => {
@@ -158,6 +173,15 @@ function screenController () {
                 boardDiv.appendChild(cellElement);
             })
             })
+        //check if game is over
+        console.log(game.gameOver);
+        if (game.getGameOver()) {
+            disableBoard();
+        }
+    }
+
+    function disableBoard() {
+        boardDiv.classList.add('disabled');
     }
 
     function clickHandler(e) {
@@ -167,10 +191,11 @@ function screenController () {
         game.playRound(selectedRow, selectedColumn);
         updateScreen();
     }
-
-    boardDiv.addEventListener('click', clickHandler);
-
+//add event listener
+boardDiv.addEventListener('click', clickHandler);
+//inital render of the board
 updateScreen();
 
 }
-screenController();
+
+// screenController();
